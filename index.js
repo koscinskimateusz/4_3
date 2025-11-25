@@ -1,10 +1,12 @@
 "use strict";
 
 const express = require("express");
+const cors = require('cors');
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
+app.use(cors());
+
+// Dane przechowywane w pliku JS
 let categories = ["funnyJoke", "lameJoke"];
 
 let funnyJoke = [
@@ -33,18 +35,18 @@ let lameJoke = [
   },
 ];
 
-
+// Mapowanie kategorii na listy dowcipów
 const jokesMap = {
   funnyJoke: funnyJoke,
   lameJoke: lameJoke,
 };
 
-
+// Endpoint 1: zwraca listę kategorii
 app.get("/jokebook/categories", (req, res) => {
   res.json(categories);
 });
 
-
+// Endpoint 2: zwraca losowy dowcip z wybranej kategorii
 app.get("/jokebook/joke/:category", (req, res) => {
   const category = req.params.category;
 
@@ -59,18 +61,8 @@ app.get("/jokebook/joke/:category", (req, res) => {
   res.json(randomJoke);
 });
 
-app.get("/jokebook/jokes/:category", (req, res) => {
-  const category = req.params.category;
-
-  if (!categories.includes(category)) {
-    return res.status(400).json({ error: `no jokes for category ${category}` });
-  }
-
-  const jokes = jokesMap[category];
-
-  res.json(jokes);
-});
-
+const path = require('path');
+app.use(express.static(path.join(__dirname, '/')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

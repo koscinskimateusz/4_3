@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Żartownik</title>
+  </head>
+  <body>
+    <h1>Żartownik</h1>
+
+    <button id="fetchCategoriesBtn">Pobierz kategorie</button>
+    <button id="fetchRandomJokeBtn">Pobierz losowego żartu</button>
+
+    <p id="categories"></p>
+    <p id="randomJoke"></p>
+
+    <script>
+     
+
+      const apiBase = "";
+
+      document
+        .getElementById("fetchCategoriesBtn")
+        .addEventListener("click", () => {
+          fetch(`${apiBase}/jokebook/categories`)
+            .then((res) => res.json())
+            .then((data) => {
+              document.getElementById("categories").textContent =
+                "Kategorie: " + data.join(", ");
+            })
+            .catch((err) => console.error("Błąd pobierania kategorii:", err));
+        });
+
+      document
+        .getElementById("fetchRandomJokeBtn")
+        .addEventListener("click", () => {
+          fetch(`${apiBase}/jokebook/categories`)
+            .then((res) => res.json())
+            .then((categories) => {
+              if (categories.length === 0) {
+                document.getElementById("randomJoke").textContent =
+                  "Brak kategorii";
+                return;
+              }
+              const randomCat =
+                categories[Math.floor(Math.random() * categories.length)];
+              return fetch(`${apiBase}/jokebook/joke/${randomCat}`);
+            })
+            .then((res) => res.json())
+            .then((joke) => {
+              if (joke.error) {
+                document.getElementById("randomJoke").textContent =
+                  `Błąd: ${joke.error}`;
+              } else {
+                document.getElementById("randomJoke").textContent =
+                  `Żart: ${joke.joke} -- Odpowiedź: ${joke.response}`;
+              }
+            })
+            .catch((err) => console.error("Błąd pobierania żartu:", err));
+        });
+    </script>
+  </body>
+</html>
